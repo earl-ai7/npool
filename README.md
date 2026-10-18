@@ -20,6 +20,7 @@ To put it online, upload `npool.html` to any static host (GitHub Pages, Netlify,
 - Grab the cue stick and pull it back, then release to shoot. The farther you pull, the more power. Esc cancels a pull.
 - Use the circular dial to set where the cue ball is hit: high for follow, low for draw, left or right for English.
 - With ball in hand, drag the white ball to place it before you shoot.
+- Press **F**, or click the **Fullscreen** button, to play with the table scaled up to fill the screen. Press **F** again, click **Exit fullscreen**, or press Esc to go back. On phones that don't allow browser fullscreen, the page switches to a full-window layout instead.
 
 ## Options
 

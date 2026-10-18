@@ -92,10 +92,40 @@ body{background-image:repeating-linear-gradient(35deg,transparent 0 140px,rgba(2
 #end.on button{animation:winp .5s .55s ease both}
 @keyframes win{from{opacity:0;transform:scale(.55) translateY(10px)}}
 @keyframes winp{from{opacity:0;transform:translateY(8px)}}
+.fsb{right:auto;left:max(14px,env(safe-area-inset-left,0px))}
+body.fs{overflow:hidden}
+body.fs main{max-width:none;width:100%;min-width:0;height:100vh;height:100dvh;min-height:0;padding:8px max(10px,env(safe-area-inset-right,0px)) 8px max(10px,env(safe-area-inset-left,0px));gap:8px;justify-content:center}
+body.fs main>div:first-child,body.fs .modes,body.fs .how,body.fs .blk:has(#swf),body.fs .blk:has(#sww){display:none}
+body.fs .tbl{max-width:none}
+body.fs .tbl:before{inset:-24px -8px}
+body.fs .pl{padding:4px 10px}
+body.fs .grp{margin:2px 0 3px;min-height:0}
+body.fs .bi{width:16px;height:16px;font-size:8px}
+body.fs .mid{padding:4px 8px;font-size:.88rem}
+body.fs .dock{padding:6px 12px;gap:14px;border-radius:12px}
+#hint{width:max-content;max-width:92%}
+body.fs-side main{display:grid;grid-template-columns:minmax(0,1fr) 184px;grid-template-rows:auto auto 1fr;column-gap:8px;row-gap:6px;align-items:start;align-content:stretch}
+body.fs-side .tbl{grid-column:1;grid-row:1/4;align-self:center;justify-self:center}
+body.fs-side .board{grid-column:2;grid-row:1;grid-template-columns:1fr 1fr;gap:4px}
+body.fs-side .board.solo{grid-template-columns:1fr}
+body.fs-side .mid{grid-column:1/3;order:-1;padding:3px 6px;font-size:.74rem;border-radius:10px}
+body.fs-side .pl{padding:3px 4px;border-radius:10px}
+body.fs-side .who{gap:4px}
+body.fs-side .av{width:18px;height:18px;font-size:.7rem}
+body.fs-side .pl b{font-size:.8rem}
+body.fs-side .grp{font-size:.66rem;margin:1px 0 0}
+body.fs-side .tray{display:none}
+body.fs-side .dock{grid-column:2;grid-row:2;display:grid;grid-template-columns:auto 1fr;gap:6px 8px;padding:6px 8px;align-items:center;width:auto}
+body.fs-side .dock .btns{grid-column:1/3;display:grid;grid-template-columns:1fr 1fr;gap:4px}
+body.fs-side .dock button{padding:4px 6px;font-size:.72rem;border-radius:8px}
+body.fs-side .blk{gap:3px}
+body.fs-side .cap{font-size:.66rem}
+body.fs-side .pwr{width:100%}
 </style>
 </head>
 <body>
 <button class="how" id="how" aria-haspopup="dialog">How to play</button>
+<button class="how fsb" id="fsb" type="button" title="Fullscreen (F)">Fullscreen</button>
 <main>
 <div><h1>NPool</h1><p class="sub" id="sub">Eight-ball for two players on one screen</p></div>
 <div class="modes" id="modes"><button data-m="8" class="on">8-Ball</button><button data-m="9">9-Ball</button><button data-m="p">Practice</button></div>
@@ -116,14 +146,14 @@ body{background-image:repeating-linear-gradient(35deg,transparent 0 140px,rgba(2
 <div class="blk"><div class="pwr"><div id="pw"></div></div><div class="cap">Shot power <span id="pt">0%</span></div></div>
 <div class="blk"><div class="sw" id="swf" role="group" aria-label="Felt color"></div><div class="cap" id="cf">Felt</div></div>
 <div class="blk"><div class="sw" id="sww" role="group" aria-label="Wood finish"></div><div class="cap" id="cw">Wood</div></div>
-<div class="btns"><button id="cb">Opponent: Human</button><button id="nb">New game</button><button id="gb">Guide: on</button><button id="sb">Sound: on</button></div>
+<div class="btns"><button id="cb">Opponent: Human</button><button id="nb">New game</button><button id="gb">Guide: on</button><button id="sb">Sound: on</button><button id="fsd" type="button" title="Fullscreen (F)">Fullscreen</button></div>
 </section>
 </main>
 <div class="modal" id="hm" role="dialog" aria-modal="true" aria-labelledby="hmt"><div class="mbox"><button class="x" id="hx" aria-label="Close">×</button><h2 id="hmt">How to play</h2><p class="help" id="hp">Click or drag on the table to aim the cue at a spot. Then grab the cue stick and pull it straight back; the farther you pull, the more power. Release to shoot. At the break and after a foul you have ball in hand: drag the white ball anywhere you like, as often as you like, until you shoot. Arrow keys fine-tune the aim (hold Shift for tiny steps) and Esc cancels a pull. Set the cue ball’s hit point first: high for follow, low for draw, left or right for English. Rules (standard 8-ball): the break is taken from behind the head string and must pocket a ball or drive four balls to a rail; otherwise your opponent may play on or make you re-break. The table stays open until a player legally pockets a ball. Every shot must hit your own group first (the 8 only once your group is gone) and then pocket a ball or drive a ball to a rail. A scratch, wrong first hit or no rail is a foul and gives your opponent the cue ball in hand. Sinking the 8 on the break re-racks. To win, call a pocket for the 8-ball (click it) and sink it there; sinking it early, in another pocket, or while fouling loses the game.</p><button class="pri" id="hok">Got it</button></div></div>
 <script>
 const $=id=>document.getElementById(id),cv=$('c'),ctx=cv.getContext('2d');
 const W=800,H=400,R=10,M=36,PR=22,SEG=36,GAP=28,NS=10,DT=1/NS;
-const dpr=Math.min(window.devicePixelRatio||1,2);
+const dpr=Math.min(Math.max(window.devicePixelRatio||1,2),2.5); // render at least 2x so the table stays sharp when scaled up in fullscreen
 cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
 const pk=[[M-6,M-6],[W/2,M-12],[W-M+6,M-6],[M-6,H-M+6],[W/2,H-M+12],[W-M+6,H-M+6]];
 const HEX=['#f4f1e8','#f2c81b','#1e5fd0','#d62828','#6a2c91','#f07f13','#1e8a3c','#8a2323','#141414','#f2c81b','#1e5fd0','#d62828','#6a2c91','#f07f13','#1e8a3c','#8a2323'];
@@ -767,6 +797,48 @@ function loop(now){
     else if(!on)stop();
     wasOn=on;
   }).observe($('end'),{attributes:true,attributeFilter:['class']});
+})();
+// ---------- fullscreen: real browser fullscreen where available, otherwise a full-window layout ----------
+(function(){
+  const b=document.body,root=document.documentElement,tbl=document.querySelector('.tbl');
+  const fsEl=()=>document.fullscreenElement||document.webkitFullscreenElement||null;
+  let real=false;
+  function fit(){ // size the table to the biggest 2:1 box that fits between the player bar and the controls
+    if(!b.classList.contains('fs')){b.classList.remove('fs-side');tbl.style.width='';return}
+    const side=innerHeight<560&&innerWidth>innerHeight; // short landscape screens: controls move to a side panel
+    b.classList.toggle('fs-side',side);
+    const m=document.querySelector('main'),cs=getComputedStyle(m);
+    const pv=parseFloat(cs.paddingTop)+parseFloat(cs.paddingBottom),ph=parseFloat(cs.paddingLeft)+parseFloat(cs.paddingRight),gap=parseFloat(cs.rowGap)||0;
+    let w=m.clientWidth-ph,h;
+    if(side){w-=$('board').offsetWidth+(parseFloat(cs.columnGap)||0);h=m.clientHeight-pv-2}
+    else h=m.clientHeight-pv-$('board').offsetHeight-document.querySelector('.dock').offsetHeight-gap*2-4;
+    tbl.style.width=Math.max(160,Math.min(w,h*2))+'px';
+  }
+  function setFs(on){
+    b.classList.toggle('fs',on);
+    $('fsd').textContent=on?'Exit fullscreen':'Fullscreen';
+    fit();requestAnimationFrame(fit);
+  }
+  function toggle(){
+    if(!b.classList.contains('fs')){
+      setFs(true);
+      const rq=root.requestFullscreen||root.webkitRequestFullscreen;
+      if(rq)try{const p=rq.call(root);if(p&&p.catch)p.catch(()=>{})}catch(_){}
+    }else{
+      if(fsEl()){const ex=document.exitFullscreen||document.webkitExitFullscreen;try{const p=ex.call(document);if(p&&p.catch)p.catch(()=>{})}catch(_){}}
+      real=false;setFs(false);
+    }
+  }
+  function onChange(){ // Esc or the browser's own exit control
+    if(fsEl())real=true;else if(real){real=false;setFs(false)}
+    fit();
+  }
+  document.addEventListener('fullscreenchange',onChange);document.addEventListener('webkitfullscreenchange',onChange);
+  addEventListener('resize',fit);addEventListener('orientationchange',()=>setTimeout(fit,150));
+  $('fsb').onclick=toggle;$('fsd').onclick=toggle;
+  addEventListener('keydown',e=>{
+    if((e.key==='f'||e.key==='F')&&!e.repeat&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!$('hm').classList.contains('on'))toggle();
+  });
 })();
 init();requestAnimationFrame(loop);
 </script>
